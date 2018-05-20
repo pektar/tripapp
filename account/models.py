@@ -19,6 +19,13 @@ class Status(models.Model):
     describe = models.CharField(max_length=200, null=False, blank=True)
     can_login = models.BooleanField(null=False, blank=False)
 
+    class Meta:
+        verbose_name = 'Status'
+        verbose_name_plural = 'Statuses'
+
+    def __str__(self):
+        return self.status
+
 
 class Profile(models.Model):
     """
@@ -28,7 +35,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=False, blank=False)
     verified = models.BooleanField(null=False, blank=False, default=False)
     bio = models.CharField(max_length=40, null=True, blank=True)
-    status = models.OneToOneField(Status, on_delete=models.DO_NOTHING, default=None)  # TODO check on_delete field
+    status = models.OneToOneField(Status, on_delete=models.DO_NOTHING, default=None,
+                                  null=True)  # TODO check on_delete field
+
+    def __str__(self):
+        return self.user.username
 
 
 ################################
@@ -44,7 +55,14 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     Update user profile when user information changed
     """
 
+    # Create profile and set ACTIVE status to account -- TODO : ACTIVE STATUS
     if created:
-        Profile.objects.create(user=instance)
+        (active_status, is_created) = Status.objects.get_or_create(
+            status="ACTIVE",
+            describe="Your account is active.",
+            can_login=True
+        )
+        Profile.objects.create(user=instance, status=active_status)
+
     else:
         instance.profile.save()
