@@ -1,0 +1,8 @@
+Django==2.0.5
+grpcio==1.12.0
+grpcio-tools==1.12.0
+Pillow==5.2.0
+protobuf==3.5.2.post1
+psycopg2==2.7.4
+pytz==2018.4
+six==1.11.0
