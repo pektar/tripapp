@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "io.grpc.examples.Account";
+option java_package = "io.grpc.trippapp.Account";
 option java_outer_classname = "AccountProto";
 option objc_class_prefix = "ACP";
 
@@ -81,8 +81,7 @@ message UserSummary {
 
 /* Request Messages */
 message LoginReq {
-    string username = 1;
-    string email = 3;
+    string username_email = 1;
     string password = 6;
 }
 message SignupReq {
