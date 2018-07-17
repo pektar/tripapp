@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from enum import Enum
 
 from tripmedia.settings import BASE_DIR
 from .strings.account import strings
@@ -60,9 +61,38 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    def get_connection(self, connection_type=None):
+        # return specific connection type from self
+        if connection_type:
+            return UserConnection.objects.filter(creator=self, type=connection_type.name)
+        # return all connections from self
+        else:
+            return UserConnection.objects.all()
+
     def change_status(self, new_status):
         status = Status.get_or_create_status(new_status)
         self.objects.update(status=status)
+
+
+class ConnectionType(Enum):
+    BLOCK = "Block"
+    FOLLOW = "Follow"
+    REPORT = "Report"
+    SPAM = "Spam"
+
+
+class UserConnection(models.Model):
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    creator = models.ForeignKey(Profile, related_name="creator", on_delete=models.CASCADE)
+    target = models.ForeignKey(Profile, related_name="target", on_delete=models.CASCADE)
+    type = models.CharField(max_length=30,
+                            choices=[(connection.name, connection.value) for connection in ConnectionType])
+
+    class Meta:
+        unique_together = ('creator', 'target', 'type')
+
+    def __str__(self):
+        return "%s %s %s" % (self.creator, self.type, self.target)
 
 
 ################################

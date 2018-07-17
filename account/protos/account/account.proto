@@ -98,6 +98,7 @@ message UserReq {
 }
 message AccountReq {
     string user_id = 1;
+    string self_user_id = 3;
 }
 message ChangeUserReq {
     string user_id = 1;

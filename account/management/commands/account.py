@@ -2,9 +2,11 @@ import grpc
 import time
 from concurrent import futures
 from contextlib import contextmanager
+from django.contrib.auth.models import User
 from django.core.management.commands.runserver import BaseRunserverCommand
 
 from account.api.account import account_pb2_grpc, account_service
+from account.models import ConnectionType
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 

@@ -15,12 +15,12 @@ class AccountService(account_pb2_grpc.AccountServiceServicer):
             validate_email(request.username_email)
             user = authenticate(email=request.username_email, password=request.password)
             print(user)
-            print("e",request.username_email)
+            print("e", request.username_email)
 
         # check with username
         except ValidationError:
             user = authenticate(username=request.username_email, password=request.password)
-            print("u",request.username_email)
+            print("u", request.username_email)
 
         # user isn't available
         if user is None:
@@ -76,6 +76,14 @@ class AccountService(account_pb2_grpc.AccountServiceServicer):
         return super().get_user(request, context)
 
     def get_account(self, request, context):
+        # get user form database by user id
+        try:
+            user = User.objects.get(id=request.user_id)
+            account = Account(user=Account.User(user_id=user.id, username=user.username,
+                                                email=user.email, can_login=user.))
+            response = AccountResp()
+        except User.DoesNotExist:
+
         return super().get_account(request, context)
 
     def get_followers(self, request, context):
