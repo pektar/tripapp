@@ -98,8 +98,6 @@ message UserReq {
 }
 message AccountReq {
     string user_id = 1;
-    string username = 3;
-    string email = 6;
 }
 message ChangeUserReq {
     string user_id = 1;
@@ -143,8 +141,7 @@ message UserResp {
 }
 message AccountResp {
     RawMessage result = 1;
-    Account.User user = 3;
-    Account.Profile profile = 6;
+    Account account = 3;
 }
 message FollowersResp {
     RawMessage result = 1;
