@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.trippapp.microservice";
+option java_outer_classname = "MicroServiceProto";
+option objc_class_prefix = "ACP";
+
+package MicroService;
+
+service ServerApi {
+    rpc signup (SignupReq) returns (SignupResp) {
+        /*
+        * Create new user by username, email, passsword and other optional information
+        * Active a new session for client to comminucate server
+        */
+    }
+    rpc is_logged_in (Empty) returns (Empty) {
+        /*
+        * Check this current session is active
+        */
+    }
+    rpc login (LoginReq) returns (LoginResp) {
+        /*
+        * Authenticate user and active current session
+        */
+    }
+    rpc logout (Empty) returns (Empty) {
+        /*
+        * Delete user session
+        */
+    }
+    rpc is_username_available (CheckUsernameReq) returns (Empty) {
+        /*
+        * Check that the username is available
+        */
+    }
+    rpc is_email_available (CheckEmailReq) returns (Empty) {
+        /*
+        * Check that the email is valid and avaialable
+        */
+    }
+    rpc change_profile (ChangeProfileReq) returns (Empty) {
+        /*
+        * Change public informations like bio, full_name and other
+        */
+    }
+    rpc change_email (ChangeEmailReq) returns (Empty) {
+        /*
+        * Change and Set new email
+        * Send token to confirm new email
+        */
+    }
+    rpc get_file (Empty) returns (stream Chunk) {
+        /*
+        * Upload file test
+        */
+    }
+}
+
+/* General Messages */
+message Empty {
+    bool success = 1;
+}
+message Chunk {
+    bytes blob = 1;
+}
+
+/* Request Messages */
+message SignupReq {
+    string username = 1;
+    string email = 3;
+    string raw_password = 6;
+}
+message LoginReq {
+    string username = 1;
+    string raw_password = 3;
+}
+message CheckUsernameReq {
+    string username = 1;
+}
+message CheckEmailReq {
+    string email = 1;
+}
+message ChangeProfileReq {
+    string username = 1;
+    string full_name = 3;
+    string bio = 6;
+}
+message ChangeEmailReq {
+    string email = 1;
+}
+
+/* Response Messages */
+message SignupResp {
+    string session_key = 1;
+}
+message LoginResp {
+    string session_key = 1;
+}
