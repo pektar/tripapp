@@ -15,8 +15,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'account'
+    'account',
+    'microservice'
 ]
+
+AUTH_USER_MODEL = 'account.user'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,7 +57,7 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.dirname(__name__) + 'db.sqlite3',
+            'NAME': os.path.dirname(__name__) + 'db.sqlite3e',
         }
     }
 else:
@@ -95,4 +100,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-
+AUTH_USER_META_VALUE = '_AUTHENTICATE_GRPC_CLIENT'
