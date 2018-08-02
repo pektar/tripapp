@@ -59,7 +59,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-
 class Status(models.Model):
     """
     Define different statuses for the user based on other user reports
@@ -97,6 +96,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=False, blank=False)
     full_name = models.CharField(max_length=150, blank=True)
     email_verified = models.BooleanField(null=False, blank=False, default=False, editable=False)
+    verified = models.BooleanField(null=False, blank=False, default=False)
     bio = models.CharField(max_length=40, null=True, blank=True)
     status = models.ForeignKey(Status, default=None, null=True, blank=True,
                                on_delete=models.SET_DEFAULT)  # TODO check on_delete field
@@ -143,6 +143,7 @@ class UserConnection(models.Model):
 
     def __str__(self):
         return " ".join({self.creator, ConnectionType[self.type], self.target})
+
 
 
 ################################
