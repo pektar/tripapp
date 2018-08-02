@@ -8,6 +8,11 @@ option objc_class_prefix = "ACP";
 package MicroService;
 
 service ServerApi {
+    rpc hey_server (Empty) returns (Empty) {
+        /*
+        * Don't do anything
+        */
+    }
     rpc signup (SignupReq) returns (SignupResp) {
         /*
         * Create new user by username, email, passsword and other optional information
@@ -59,7 +64,6 @@ service ServerApi {
 
 /* General Messages */
 message Empty {
-    bool success = 1;
 }
 message Chunk {
     bytes blob = 1;
