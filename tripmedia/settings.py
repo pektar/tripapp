@@ -1,4 +1,7 @@
 import os
+import sys
+from copy import deepcopy
+from django.utils.log import DEFAULT_LOGGING
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -57,7 +60,7 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.dirname(__name__) + 'db.sqlite3',
+            'NAME': os.path.dirname(__name__) + 'db.sqlite',
         }
     }
 else:
@@ -101,3 +104,31 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTH_USER_META_VALUE = '_AUTHENTICATE_GRPC_CLIENT'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'log_to_stdout': {
+            'level': 'DEBUG',
+            'formatter': 'simple',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        },
+    },
+    'loggers': {
+        'microservice': {
+            'handlers': ['log_to_stdout'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
