@@ -47,7 +47,7 @@ class ServerApi(rpc.ServerApiServicer):
         # register new user
         user = User.objects.create_user(request.username, request.email, raw_password)
         if user:
-            session_key = self._create_session()
+            session_key = self._create_session(user=user)
             logger.debug("Successfully user created, User:%s" % user.username)
 
         return msg.SignupResp(session_key=session_key)
@@ -78,7 +78,7 @@ class ServerApi(rpc.ServerApiServicer):
             # create new session for user
             user = authenticate(username=username, password=raw_password)
             if user:
-                session_key = self._create_session()
+                session_key = self._create_session(user=user)
             else:
                 context.set_code(grpc.StatusCode.UNAUTHENTICATED)
                 context.set_details("Username or password is incorrect."
