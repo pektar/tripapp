@@ -14,15 +14,25 @@ class ServerApiStub(object):
     Args:
       channel: A grpc.Channel.
     """
+    self.hey_server = channel.unary_unary(
+        '/MicroService.ServerApi/hey_server',
+        request_serializer=server__api__pb2.Empty.SerializeToString,
+        response_deserializer=server__api__pb2.Empty.FromString,
+        )
     self.signup = channel.unary_unary(
         '/MicroService.ServerApi/signup',
         request_serializer=server__api__pb2.SignupReq.SerializeToString,
         response_deserializer=server__api__pb2.SignupResp.FromString,
         )
+    self.init_profile = channel.unary_unary(
+        '/MicroService.ServerApi/init_profile',
+        request_serializer=server__api__pb2.InitProfileReq.SerializeToString,
+        response_deserializer=server__api__pb2.ResultBool.FromString,
+        )
     self.is_logged_in = channel.unary_unary(
         '/MicroService.ServerApi/is_logged_in',
         request_serializer=server__api__pb2.Empty.SerializeToString,
-        response_deserializer=server__api__pb2.Empty.FromString,
+        response_deserializer=server__api__pb2.ResultBool.FromString,
         )
     self.login = channel.unary_unary(
         '/MicroService.ServerApi/login',
@@ -31,27 +41,32 @@ class ServerApiStub(object):
         )
     self.logout = channel.unary_unary(
         '/MicroService.ServerApi/logout',
-        request_serializer=server__api__pb2.Empty.SerializeToString,
-        response_deserializer=server__api__pb2.Empty.FromString,
+        request_serializer=server__api__pb2.LogoutReq.SerializeToString,
+        response_deserializer=server__api__pb2.ResultBool.FromString,
         )
     self.is_username_available = channel.unary_unary(
         '/MicroService.ServerApi/is_username_available',
         request_serializer=server__api__pb2.CheckUsernameReq.SerializeToString,
-        response_deserializer=server__api__pb2.Empty.FromString,
+        response_deserializer=server__api__pb2.ResultBool.FromString,
         )
     self.is_email_available = channel.unary_unary(
         '/MicroService.ServerApi/is_email_available',
         request_serializer=server__api__pb2.CheckEmailReq.SerializeToString,
-        response_deserializer=server__api__pb2.Empty.FromString,
+        response_deserializer=server__api__pb2.ResultBool.FromString,
         )
     self.change_profile = channel.unary_unary(
         '/MicroService.ServerApi/change_profile',
         request_serializer=server__api__pb2.ChangeProfileReq.SerializeToString,
-        response_deserializer=server__api__pb2.Empty.FromString,
+        response_deserializer=server__api__pb2.ResultBool.FromString,
         )
     self.change_email = channel.unary_unary(
         '/MicroService.ServerApi/change_email',
         request_serializer=server__api__pb2.ChangeEmailReq.SerializeToString,
+        response_deserializer=server__api__pb2.Empty.FromString,
+        )
+    self.change_username = channel.unary_unary(
+        '/MicroService.ServerApi/change_username',
+        request_serializer=server__api__pb2.ChangeUsernameReq.SerializeToString,
         response_deserializer=server__api__pb2.Empty.FromString,
         )
     self.get_file = channel.unary_stream(
@@ -65,10 +80,26 @@ class ServerApiServicer(object):
   # missing associated documentation comment in .proto file
   pass
 
+  def hey_server(self, request, context):
+    """
+    Don't do anything
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
   def signup(self, request, context):
     """
     Create new user by username, email, passsword and other optional information
     Active a new session for client to comminucate server
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def init_profile(self, request, context):
+    """
+    Set public informations like bio, full_name and other
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -131,6 +162,14 @@ class ServerApiServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def change_username(self, request, context):
+    """
+    Change and Set new username
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
   def get_file(self, request, context):
     """
     Upload file test
@@ -142,15 +181,25 @@ class ServerApiServicer(object):
 
 def add_ServerApiServicer_to_server(servicer, server):
   rpc_method_handlers = {
+      'hey_server': grpc.unary_unary_rpc_method_handler(
+          servicer.hey_server,
+          request_deserializer=server__api__pb2.Empty.FromString,
+          response_serializer=server__api__pb2.Empty.SerializeToString,
+      ),
       'signup': grpc.unary_unary_rpc_method_handler(
           servicer.signup,
           request_deserializer=server__api__pb2.SignupReq.FromString,
           response_serializer=server__api__pb2.SignupResp.SerializeToString,
       ),
+      'init_profile': grpc.unary_unary_rpc_method_handler(
+          servicer.init_profile,
+          request_deserializer=server__api__pb2.InitProfileReq.FromString,
+          response_serializer=server__api__pb2.ResultBool.SerializeToString,
+      ),
       'is_logged_in': grpc.unary_unary_rpc_method_handler(
           servicer.is_logged_in,
           request_deserializer=server__api__pb2.Empty.FromString,
-          response_serializer=server__api__pb2.Empty.SerializeToString,
+          response_serializer=server__api__pb2.ResultBool.SerializeToString,
       ),
       'login': grpc.unary_unary_rpc_method_handler(
           servicer.login,
@@ -159,27 +208,32 @@ def add_ServerApiServicer_to_server(servicer, server):
       ),
       'logout': grpc.unary_unary_rpc_method_handler(
           servicer.logout,
-          request_deserializer=server__api__pb2.Empty.FromString,
-          response_serializer=server__api__pb2.Empty.SerializeToString,
+          request_deserializer=server__api__pb2.LogoutReq.FromString,
+          response_serializer=server__api__pb2.ResultBool.SerializeToString,
       ),
       'is_username_available': grpc.unary_unary_rpc_method_handler(
           servicer.is_username_available,
           request_deserializer=server__api__pb2.CheckUsernameReq.FromString,
-          response_serializer=server__api__pb2.Empty.SerializeToString,
+          response_serializer=server__api__pb2.ResultBool.SerializeToString,
       ),
       'is_email_available': grpc.unary_unary_rpc_method_handler(
           servicer.is_email_available,
           request_deserializer=server__api__pb2.CheckEmailReq.FromString,
-          response_serializer=server__api__pb2.Empty.SerializeToString,
+          response_serializer=server__api__pb2.ResultBool.SerializeToString,
       ),
       'change_profile': grpc.unary_unary_rpc_method_handler(
           servicer.change_profile,
           request_deserializer=server__api__pb2.ChangeProfileReq.FromString,
-          response_serializer=server__api__pb2.Empty.SerializeToString,
+          response_serializer=server__api__pb2.ResultBool.SerializeToString,
       ),
       'change_email': grpc.unary_unary_rpc_method_handler(
           servicer.change_email,
           request_deserializer=server__api__pb2.ChangeEmailReq.FromString,
+          response_serializer=server__api__pb2.Empty.SerializeToString,
+      ),
+      'change_username': grpc.unary_unary_rpc_method_handler(
+          servicer.change_username,
+          request_deserializer=server__api__pb2.ChangeUsernameReq.FromString,
           response_serializer=server__api__pb2.Empty.SerializeToString,
       ),
       'get_file': grpc.unary_stream_rpc_method_handler(

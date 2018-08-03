@@ -1,4 +1,7 @@
 import os
+import sys
+from copy import deepcopy
+from django.utils.log import DEFAULT_LOGGING
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -57,7 +60,7 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.dirname(__name__) + 'db.sqlite3',
+            'NAME': os.path.dirname(__name__) + 'db.sqlite',
         }
     }
 else:
@@ -100,4 +103,45 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-AUTH_USER_META_VALUE = '_AUTHENTICATE_GRPC_CLIENT'
+default_server_port = 8585
+default_workers = 5
+auth_meta_keys = {
+    "auth_key": "_auth_",
+    "auth_value": "AUTH_GRPC_CLIENT",
+    "anonymous_value": "ANONYMOUS_GRPC_CLIENT",
+    "auth_session_key": "_auth_session-key",
+    "auth_user_key": "_auth_user-id",
+    "auth_client_state": "_auth_logged-in",
+}
+client_meta_key = {
+    "client_last_seen": "_client_last-seen",
+    "client_request_id": "_client_request-id"
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'log_to_stdout': {
+            'level': 'DEBUG',
+            'formatter': 'simple',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        },
+    },
+    'loggers': {
+        'microservice': {
+            'handlers': ['log_to_stdout'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
