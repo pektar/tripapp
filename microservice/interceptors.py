@@ -1,6 +1,5 @@
 """Interceptor that authenticate users."""
 
-import datetime
 import grpc
 import logging
 from django.contrib.sessions.backends.cached_db import SessionStore
@@ -34,11 +33,10 @@ class AuthenticateInterceptor(grpc.ServerInterceptor):
         try:
             session_key = ''
             metadata = dict(handler_call_details.invocation_metadata)
-            print(metadata)
-            if 'session_key' in metadata:
-                session_key = metadata['session_key']
 
-            print(session_key)
+            if 'session-key' in metadata:
+                session_key = metadata['session-key']
+
             session = Session.objects.get(pk=session_key)
 
             data = session.get_decoded()
@@ -53,7 +51,7 @@ class AuthenticateInterceptor(grpc.ServerInterceptor):
                 return continuation(handler_call_details)
 
         except Session.DoesNotExist:
-            print("Session does not exist")
+            logger.debug("session-key is not available")
 
         # method_name = str.split(handler_call_details.method, '/')[-1:][0]
         method_name = continuation(handler_call_details).unary_unary.__name__
@@ -64,34 +62,19 @@ class AuthenticateInterceptor(grpc.ServerInterceptor):
         return self._terminator
 
 
-def log_errors(func):
-    from functools import wraps
-
-    @wraps(func)
-    def wrapper(*args, **kw):
-        metadata = {'timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')}
-        servicer_context = args[2]
-        metadata.update(dict(servicer_context.invocation_metadata()))
-        print(metadata)
-        try:
-            result = func(*args, **kw)
-        except Exception as e:
-            logger.error(e, exc_info=True, extra=metadata)
-            if servicer_context:
-                servicer_context.set_details(str(e))
-                servicer_context.set_code(grpc.StatusCode.UNKNOWN)
-            # TODO: need to return an appropriate response type here
-            # Currently this will raise a serialization error on the server-side
-            return None
-        else:
-            return result
-
-    return wrapper
-
-
 class LoggingInterceptor(grpc.ServerInterceptor):
-    def __init__(self):
-        print("Initializing logging interceptor")
 
     def intercept_service(self, continuation, handler_call_details):
+        called_method = handler_call_details.method
+        metadata = dict(handler_call_details.invocation_metadata)
+
+        logger.debug("client call %s" % called_method)
+
+        # logging request
+        try:
+            logger.debug("%s" % metadata["user-agent"])
+            logger.info("%s SK/%s" % (called_method, metadata["session-key"]))
+        except Exception as key:
+            logger.error("request has no %s in its header" % key)
+
         return continuation(handler_call_details)
