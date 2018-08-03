@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     @contextmanager
     def serve_forever(self, **kwargs):
-        authenticate_validate = AuthenticateInterceptor(['signup', 'login', 'get_file'])
+        authenticate_validate = AuthenticateInterceptor()
         logging_interceptor = LoggingInterceptor()
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=5),
                              interceptors=(logging_interceptor, authenticate_validate,))
