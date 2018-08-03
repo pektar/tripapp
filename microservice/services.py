@@ -1,4 +1,5 @@
 import grpc
+import logging
 import os
 from django.contrib.auth import authenticate
 from django.contrib.sessions.backends.db import SessionStore
@@ -12,7 +13,6 @@ from tripmedia import settings
 from tripmedia.settings import BASE_DIR
 from .message import server_api_pb2 as msg
 from .rpc import server_api_pb2_grpc as rpc
-
 
 #
 # def request_wrapper(func):
@@ -51,21 +51,36 @@ from .rpc import server_api_pb2_grpc as rpc
 #
 #     return ClassWrapper
 
+logger = logging.getLogger(__name__)
+
 
 class ServerApi(rpc.ServerApiServicer):
 
     def signup(self, request, context):
-        print(request)
         session_key = None
+
+        username = str.lower(request.username)
+        email = str.lower(request.email)
+        raw_password = request.raw_password
 
         # check username is available
         try:
-            old_user = User.objects.get(username=request.username)
+            old_user = User.objects.get(username=username)
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details("username is not available.")
             return msg.SignupResp(session_key=session_key)
         except User.DoesNotExist:
             pass
+
+        # check validation email
+        email_validator = validate_email
+        try:
+            email_validator(email)
+        except ValidationError as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            # context.set_details("please enter a valid email.")
+            context.set_details(e.message.__str__())
+            return msg.SignupResp(session_key=session_key)
 
         # check email is available
         try:
@@ -76,31 +91,16 @@ class ServerApi(rpc.ServerApiServicer):
         except User.DoesNotExist:
             pass
 
-        email_validator = validate_email
-        try:
-            email_validator(request.email)
-            new_user = User.objects.create_user(request.username, request.email, request.raw_password)
-            if new_user:
-                session_key = self._create_session()
-        except ValidationError as e:
-            print(e.message)
-            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            context.set_details("please enter a valid email.")
+        user = User.objects.create_user(request.username, request.email, request.raw_password)
+        if user:
+            session_key = self._create_session()
+            logger.debug("successfully user created, username/%s" % user.username)
 
         return msg.SignupResp(session_key=session_key)
 
     def is_logged_in(self, request, context):
-        # # get user session key from metadata sent
-        # session_key = dict(context.invocation_metadata()).get('session_key')
-        #
-        # # check meta key that represent user logged state
-        # session = SessionStore(session_key)
-        # if session['_auth_logged_in']:
-        #     return msg.Empty(success=True)
-        # print(context.peer_identity_key())
         return msg.Empty(success=True)
 
-    # @log_errors
     def login(self, request, context):
         session_key = None
 
