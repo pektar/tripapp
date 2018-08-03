@@ -2,9 +2,7 @@
 
 import grpc
 import logging
-from django.contrib.sessions.backends.cached_db import SessionStore
 from django.contrib.sessions.models import Session
-from django.utils.timezone import now
 
 from tripmedia import settings
 
@@ -24,40 +22,34 @@ class AuthenticateInterceptor(grpc.ServerInterceptor):
     if session_key exist in db and has access to send request, this client is authenticated
     """
 
-    def __init__(self, ignored_method):
-        self._ignored_method = ignored_method
+    def __init__(self):
         self._terminator = _unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, "Access dined!")
 
     def intercept_service(self, continuation, handler_call_details):
-        # check session data and check user login state
+        session = None
+        session_key = ''
+        metadata = dict(handler_call_details.invocation_metadata)
+        method_name = continuation(handler_call_details).unary_unary.__name__
+        # method_name = str.split(handler_call_details.method, '/')[-1:][0]
+        auth_meta_keys = settings.auth_meta_keys
+
+        # get session key from header if exists
+        if auth_meta_keys.get("auth_session_key") in metadata:
+            session_key = metadata[auth_meta_keys.get("auth_session_key")]
+        else:
+            return self._terminator
+
+        # get request session
         try:
-            session_key = ''
-            metadata = dict(handler_call_details.invocation_metadata)
-
-            if 'session-key' in metadata:
-                session_key = metadata['session-key']
-
             session = Session.objects.get(pk=session_key)
-
             data = session.get_decoded()
-            if all([data['_auth'] == settings.AUTH_USER_META_VALUE,
-                    data['_auth_logged_in'],
-                    ]):
-                # update last seen date in session
-                session_store = SessionStore(session_key)
-                session_store['_auth_last_request'] = now().timestamp()
-                session_store.save()
-
+            if all([
+                data[auth_meta_keys.get("auth_key")] ==
+                auth_meta_keys.get("anonymous_value") or auth_meta_keys.get("auth_value"),
+            ]):
                 return continuation(handler_call_details)
-
         except Session.DoesNotExist:
             logger.debug("session-key is not available")
-
-        # method_name = str.split(handler_call_details.method, '/')[-1:][0]
-        method_name = continuation(handler_call_details).unary_unary.__name__
-
-        if method_name in self._ignored_method:
-            return continuation(handler_call_details)
 
         return self._terminator
 
