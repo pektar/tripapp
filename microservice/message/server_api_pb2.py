@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='server_api.proto',
   package='MicroService',
   syntax='proto3',
-  serialized_pb=_b('\n\x10server_api.proto\x12\x0cMicroService\"\x18\n\x05\x45mpty\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x15\n\x05\x43hunk\x12\x0c\n\x04\x62lob\x18\x01 \x01(\x0c\"B\n\tSignupReq\x12\x10\n\x08username\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x03 \x01(\t\x12\x14\n\x0craw_password\x18\x06 \x01(\t\"2\n\x08LoginReq\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x14\n\x0craw_password\x18\x03 \x01(\t\"$\n\x10\x43heckUsernameReq\x12\x10\n\x08username\x18\x01 \x01(\t\"\x1e\n\rCheckEmailReq\x12\r\n\x05\x65mail\x18\x01 \x01(\t\"D\n\x10\x43hangeProfileReq\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x11\n\tfull_name\x18\x03 \x01(\t\x12\x0b\n\x03\x62io\x18\x06 \x01(\t\"\x1f\n\x0e\x43hangeEmailReq\x12\r\n\x05\x65mail\x18\x01 \x01(\t\"!\n\nSignupResp\x12\x13\n\x0bsession_key\x18\x01 \x01(\t\" \n\tLoginResp\x12\x13\n\x0bsession_key\x18\x01 \x01(\t2\xda\x04\n\tServerApi\x12=\n\x06signup\x12\x17.MicroService.SignupReq\x1a\x18.MicroService.SignupResp\"\x00\x12:\n\x0cis_logged_in\x12\x13.MicroService.Empty\x1a\x13.MicroService.Empty\"\x00\x12:\n\x05login\x12\x16.MicroService.LoginReq\x1a\x17.MicroService.LoginResp\"\x00\x12\x34\n\x06logout\x12\x13.MicroService.Empty\x1a\x13.MicroService.Empty\"\x00\x12N\n\x15is_username_available\x12\x1e.MicroService.CheckUsernameReq\x1a\x13.MicroService.Empty\"\x00\x12H\n\x12is_email_available\x12\x1b.MicroService.CheckEmailReq\x1a\x13.MicroService.Empty\"\x00\x12G\n\x0e\x63hange_profile\x12\x1e.MicroService.ChangeProfileReq\x1a\x13.MicroService.Empty\"\x00\x12\x43\n\x0c\x63hange_email\x12\x1c.MicroService.ChangeEmailReq\x1a\x13.MicroService.Empty\"\x00\x12\x38\n\x08get_file\x12\x13.MicroService.Empty\x1a\x13.MicroService.Chunk\"\x00\x30\x01\x42\x33\n\x1cio.grpc.trippapp.microservicB\x11MicroServiceProtoP\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x10server_api.proto\x12\x0cMicroService\"\x07\n\x05\x45mpty\"\x1d\n\nResultBool\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x15\n\x05\x43hunk\x12\x0c\n\x04\x62lob\x18\x01 \x01(\x0c\"B\n\tSignupReq\x12\x10\n\x08username\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x03 \x01(\t\x12\x14\n\x0craw_password\x18\x06 \x01(\t\"0\n\x0eInitProfileReq\x12\x11\n\tfull_name\x18\x01 \x01(\t\x12\x0b\n\x03\x62io\x18\x03 \x01(\t\"2\n\x08LoginReq\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x14\n\x0craw_password\x18\x03 \x01(\t\" \n\tLogoutReq\x12\x13\n\x0bsession_key\x18\x01 \x01(\t\"$\n\x10\x43heckUsernameReq\x12\x10\n\x08username\x18\x01 \x01(\t\"%\n\x11\x43hangeUsernameReq\x12\x10\n\x08username\x18\x01 \x01(\t\"\x1e\n\rCheckEmailReq\x12\r\n\x05\x65mail\x18\x01 \x01(\t\"2\n\x10\x43hangeProfileReq\x12\x11\n\tfull_name\x18\x03 \x01(\t\x12\x0b\n\x03\x62io\x18\x06 \x01(\t\"\x1f\n\x0e\x43hangeEmailReq\x12\r\n\x05\x65mail\x18\x01 \x01(\t\"!\n\nSignupResp\x12\x13\n\x0bsession_key\x18\x01 \x01(\t\" \n\tLoginResp\x12\x13\n\x0bsession_key\x18\x01 \x01(\t2\xc6\x06\n\tServerApi\x12\x38\n\nhey_server\x12\x13.MicroService.Empty\x1a\x13.MicroService.Empty\"\x00\x12=\n\x06signup\x12\x17.MicroService.SignupReq\x1a\x18.MicroService.SignupResp\"\x00\x12H\n\x0cinit_profile\x12\x1c.MicroService.InitProfileReq\x1a\x18.MicroService.ResultBool\"\x00\x12?\n\x0cis_logged_in\x12\x13.MicroService.Empty\x1a\x18.MicroService.ResultBool\"\x00\x12:\n\x05login\x12\x16.MicroService.LoginReq\x1a\x17.MicroService.LoginResp\"\x00\x12=\n\x06logout\x12\x17.MicroService.LogoutReq\x1a\x18.MicroService.ResultBool\"\x00\x12S\n\x15is_username_available\x12\x1e.MicroService.CheckUsernameReq\x1a\x18.MicroService.ResultBool\"\x00\x12M\n\x12is_email_available\x12\x1b.MicroService.CheckEmailReq\x1a\x18.MicroService.ResultBool\"\x00\x12L\n\x0e\x63hange_profile\x12\x1e.MicroService.ChangeProfileReq\x1a\x18.MicroService.ResultBool\"\x00\x12\x43\n\x0c\x63hange_email\x12\x1c.MicroService.ChangeEmailReq\x1a\x13.MicroService.Empty\"\x00\x12I\n\x0f\x63hange_username\x12\x1f.MicroService.ChangeUsernameReq\x1a\x13.MicroService.Empty\"\x00\x12\x38\n\x08get_file\x12\x13.MicroService.Empty\x1a\x13.MicroService.Chunk\"\x00\x30\x01\x42:\n\x1dio.grpc.trippapp.microserviceB\x11MicroServiceProtoP\x01\xa2\x02\x03\x41\x43Pb\x06proto3')
 )
 
 
@@ -32,8 +32,32 @@ _EMPTY = _descriptor.Descriptor(
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=34,
+  serialized_end=41,
+)
+
+
+_RESULTBOOL = _descriptor.Descriptor(
+  name='ResultBool',
+  full_name='MicroService.ResultBool',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
     _descriptor.FieldDescriptor(
-      name='success', full_name='MicroService.Empty.success', index=0,
+      name='success', full_name='MicroService.ResultBool.success', index=0,
       number=1, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -51,8 +75,8 @@ _EMPTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=34,
-  serialized_end=58,
+  serialized_start=43,
+  serialized_end=72,
 )
 
 
@@ -82,8 +106,8 @@ _CHUNK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=60,
-  serialized_end=81,
+  serialized_start=74,
+  serialized_end=95,
 )
 
 
@@ -127,8 +151,46 @@ _SIGNUPREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=83,
-  serialized_end=149,
+  serialized_start=97,
+  serialized_end=163,
+)
+
+
+_INITPROFILEREQ = _descriptor.Descriptor(
+  name='InitProfileReq',
+  full_name='MicroService.InitProfileReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='full_name', full_name='MicroService.InitProfileReq.full_name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='bio', full_name='MicroService.InitProfileReq.bio', index=1,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=165,
+  serialized_end=213,
 )
 
 
@@ -165,8 +227,39 @@ _LOGINREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=151,
-  serialized_end=201,
+  serialized_start=215,
+  serialized_end=265,
+)
+
+
+_LOGOUTREQ = _descriptor.Descriptor(
+  name='LogoutReq',
+  full_name='MicroService.LogoutReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='session_key', full_name='MicroService.LogoutReq.session_key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=267,
+  serialized_end=299,
 )
 
 
@@ -196,8 +289,39 @@ _CHECKUSERNAMEREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=203,
-  serialized_end=239,
+  serialized_start=301,
+  serialized_end=337,
+)
+
+
+_CHANGEUSERNAMEREQ = _descriptor.Descriptor(
+  name='ChangeUsernameReq',
+  full_name='MicroService.ChangeUsernameReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='username', full_name='MicroService.ChangeUsernameReq.username', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=339,
+  serialized_end=376,
 )
 
 
@@ -227,8 +351,8 @@ _CHECKEMAILREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=241,
-  serialized_end=271,
+  serialized_start=378,
+  serialized_end=408,
 )
 
 
@@ -240,21 +364,14 @@ _CHANGEPROFILEREQ = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='username', full_name='MicroService.ChangeProfileReq.username', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='full_name', full_name='MicroService.ChangeProfileReq.full_name', index=1,
+      name='full_name', full_name='MicroService.ChangeProfileReq.full_name', index=0,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='bio', full_name='MicroService.ChangeProfileReq.bio', index=2,
+      name='bio', full_name='MicroService.ChangeProfileReq.bio', index=1,
       number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -272,8 +389,8 @@ _CHANGEPROFILEREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=273,
-  serialized_end=341,
+  serialized_start=410,
+  serialized_end=460,
 )
 
 
@@ -303,8 +420,8 @@ _CHANGEEMAILREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=343,
-  serialized_end=374,
+  serialized_start=462,
+  serialized_end=493,
 )
 
 
@@ -334,8 +451,8 @@ _SIGNUPRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=376,
-  serialized_end=409,
+  serialized_start=495,
+  serialized_end=528,
 )
 
 
@@ -365,15 +482,19 @@ _LOGINRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=411,
-  serialized_end=443,
+  serialized_start=530,
+  serialized_end=562,
 )
 
 DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
+DESCRIPTOR.message_types_by_name['ResultBool'] = _RESULTBOOL
 DESCRIPTOR.message_types_by_name['Chunk'] = _CHUNK
 DESCRIPTOR.message_types_by_name['SignupReq'] = _SIGNUPREQ
+DESCRIPTOR.message_types_by_name['InitProfileReq'] = _INITPROFILEREQ
 DESCRIPTOR.message_types_by_name['LoginReq'] = _LOGINREQ
+DESCRIPTOR.message_types_by_name['LogoutReq'] = _LOGOUTREQ
 DESCRIPTOR.message_types_by_name['CheckUsernameReq'] = _CHECKUSERNAMEREQ
+DESCRIPTOR.message_types_by_name['ChangeUsernameReq'] = _CHANGEUSERNAMEREQ
 DESCRIPTOR.message_types_by_name['CheckEmailReq'] = _CHECKEMAILREQ
 DESCRIPTOR.message_types_by_name['ChangeProfileReq'] = _CHANGEPROFILEREQ
 DESCRIPTOR.message_types_by_name['ChangeEmailReq'] = _CHANGEEMAILREQ
@@ -387,6 +508,13 @@ Empty = _reflection.GeneratedProtocolMessageType('Empty', (_message.Message,), d
   # @@protoc_insertion_point(class_scope:MicroService.Empty)
   ))
 _sym_db.RegisterMessage(Empty)
+
+ResultBool = _reflection.GeneratedProtocolMessageType('ResultBool', (_message.Message,), dict(
+  DESCRIPTOR = _RESULTBOOL,
+  __module__ = 'server_api_pb2'
+  # @@protoc_insertion_point(class_scope:MicroService.ResultBool)
+  ))
+_sym_db.RegisterMessage(ResultBool)
 
 Chunk = _reflection.GeneratedProtocolMessageType('Chunk', (_message.Message,), dict(
   DESCRIPTOR = _CHUNK,
@@ -402,6 +530,13 @@ SignupReq = _reflection.GeneratedProtocolMessageType('SignupReq', (_message.Mess
   ))
 _sym_db.RegisterMessage(SignupReq)
 
+InitProfileReq = _reflection.GeneratedProtocolMessageType('InitProfileReq', (_message.Message,), dict(
+  DESCRIPTOR = _INITPROFILEREQ,
+  __module__ = 'server_api_pb2'
+  # @@protoc_insertion_point(class_scope:MicroService.InitProfileReq)
+  ))
+_sym_db.RegisterMessage(InitProfileReq)
+
 LoginReq = _reflection.GeneratedProtocolMessageType('LoginReq', (_message.Message,), dict(
   DESCRIPTOR = _LOGINREQ,
   __module__ = 'server_api_pb2'
@@ -409,12 +544,26 @@ LoginReq = _reflection.GeneratedProtocolMessageType('LoginReq', (_message.Messag
   ))
 _sym_db.RegisterMessage(LoginReq)
 
+LogoutReq = _reflection.GeneratedProtocolMessageType('LogoutReq', (_message.Message,), dict(
+  DESCRIPTOR = _LOGOUTREQ,
+  __module__ = 'server_api_pb2'
+  # @@protoc_insertion_point(class_scope:MicroService.LogoutReq)
+  ))
+_sym_db.RegisterMessage(LogoutReq)
+
 CheckUsernameReq = _reflection.GeneratedProtocolMessageType('CheckUsernameReq', (_message.Message,), dict(
   DESCRIPTOR = _CHECKUSERNAMEREQ,
   __module__ = 'server_api_pb2'
   # @@protoc_insertion_point(class_scope:MicroService.CheckUsernameReq)
   ))
 _sym_db.RegisterMessage(CheckUsernameReq)
+
+ChangeUsernameReq = _reflection.GeneratedProtocolMessageType('ChangeUsernameReq', (_message.Message,), dict(
+  DESCRIPTOR = _CHANGEUSERNAMEREQ,
+  __module__ = 'server_api_pb2'
+  # @@protoc_insertion_point(class_scope:MicroService.ChangeUsernameReq)
+  ))
+_sym_db.RegisterMessage(ChangeUsernameReq)
 
 CheckEmailReq = _reflection.GeneratedProtocolMessageType('CheckEmailReq', (_message.Message,), dict(
   DESCRIPTOR = _CHECKEMAILREQ,
@@ -453,7 +602,7 @@ _sym_db.RegisterMessage(LoginResp)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\034io.grpc.trippapp.microservicB\021MicroServiceProtoP\001'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\035io.grpc.trippapp.microserviceB\021MicroServiceProtoP\001\242\002\003ACP'))
 
 _SERVERAPI = _descriptor.ServiceDescriptor(
   name='ServerApi',
@@ -461,31 +610,49 @@ _SERVERAPI = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=446,
-  serialized_end=1048,
+  serialized_start=565,
+  serialized_end=1403,
   methods=[
   _descriptor.MethodDescriptor(
-    name='signup',
-    full_name='MicroService.ServerApi.signup',
+    name='hey_server',
+    full_name='MicroService.ServerApi.hey_server',
     index=0,
-    containing_service=None,
-    input_type=_SIGNUPREQ,
-    output_type=_SIGNUPRESP,
-    options=None,
-  ),
-  _descriptor.MethodDescriptor(
-    name='is_logged_in',
-    full_name='MicroService.ServerApi.is_logged_in',
-    index=1,
     containing_service=None,
     input_type=_EMPTY,
     output_type=_EMPTY,
     options=None,
   ),
   _descriptor.MethodDescriptor(
+    name='signup',
+    full_name='MicroService.ServerApi.signup',
+    index=1,
+    containing_service=None,
+    input_type=_SIGNUPREQ,
+    output_type=_SIGNUPRESP,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='init_profile',
+    full_name='MicroService.ServerApi.init_profile',
+    index=2,
+    containing_service=None,
+    input_type=_INITPROFILEREQ,
+    output_type=_RESULTBOOL,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='is_logged_in',
+    full_name='MicroService.ServerApi.is_logged_in',
+    index=3,
+    containing_service=None,
+    input_type=_EMPTY,
+    output_type=_RESULTBOOL,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
     name='login',
     full_name='MicroService.ServerApi.login',
-    index=2,
+    index=4,
     containing_service=None,
     input_type=_LOGINREQ,
     output_type=_LOGINRESP,
@@ -494,52 +661,61 @@ _SERVERAPI = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='logout',
     full_name='MicroService.ServerApi.logout',
-    index=3,
+    index=5,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=_EMPTY,
+    input_type=_LOGOUTREQ,
+    output_type=_RESULTBOOL,
     options=None,
   ),
   _descriptor.MethodDescriptor(
     name='is_username_available',
     full_name='MicroService.ServerApi.is_username_available',
-    index=4,
+    index=6,
     containing_service=None,
     input_type=_CHECKUSERNAMEREQ,
-    output_type=_EMPTY,
+    output_type=_RESULTBOOL,
     options=None,
   ),
   _descriptor.MethodDescriptor(
     name='is_email_available',
     full_name='MicroService.ServerApi.is_email_available',
-    index=5,
+    index=7,
     containing_service=None,
     input_type=_CHECKEMAILREQ,
-    output_type=_EMPTY,
+    output_type=_RESULTBOOL,
     options=None,
   ),
   _descriptor.MethodDescriptor(
     name='change_profile',
     full_name='MicroService.ServerApi.change_profile',
-    index=6,
+    index=8,
     containing_service=None,
     input_type=_CHANGEPROFILEREQ,
-    output_type=_EMPTY,
+    output_type=_RESULTBOOL,
     options=None,
   ),
   _descriptor.MethodDescriptor(
     name='change_email',
     full_name='MicroService.ServerApi.change_email',
-    index=7,
+    index=9,
     containing_service=None,
     input_type=_CHANGEEMAILREQ,
     output_type=_EMPTY,
     options=None,
   ),
   _descriptor.MethodDescriptor(
+    name='change_username',
+    full_name='MicroService.ServerApi.change_username',
+    index=10,
+    containing_service=None,
+    input_type=_CHANGEUSERNAMEREQ,
+    output_type=_EMPTY,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
     name='get_file',
     full_name='MicroService.ServerApi.get_file',
-    index=8,
+    index=11,
     containing_service=None,
     input_type=_EMPTY,
     output_type=_CHUNK,
