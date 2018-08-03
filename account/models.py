@@ -1,7 +1,6 @@
 import os
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin, UserManager
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import post_save
@@ -10,6 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from enum import Enum, unique
 
+from account.validators import UsernameValidator
 from tripmedia.settings import BASE_DIR
 from .strings.account import strings
 
@@ -24,7 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     Custom user model that idea taken from django user model in auth app
     """
 
-    username_validator = UnicodeUsernameValidator()
+    username_validator = UsernameValidator
     username = models.CharField(
         max_length=150,
         unique=True,
@@ -37,7 +37,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    last_login = models.DateTimeField(blank=True, null=True)
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
@@ -58,6 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
 
 class Status(models.Model):
     """
@@ -143,7 +143,6 @@ class UserConnection(models.Model):
 
     def __str__(self):
         return " ".join({self.creator, ConnectionType[self.type], self.target})
-
 
 
 ################################
