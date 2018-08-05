@@ -147,6 +147,21 @@ class ServerApi(rpc.ServerApiServicer):
 
         return msg.ResultBool(success=False)
 
+    def change_profile(self, request, context):
+        user = self._get_user(context)
+
+        # clean_data
+        full_name = request.full_name
+        bio = request.bio
+
+        # change user profile
+        if user:
+            profile = user.profile
+            profile.save(full_name=full_name, bio=bio)
+            return msg.ResultBool(success=True)
+        else:
+            return msg.ResultBool(sucess=False)
+
     # def get_file(self, request, context):
     #     file_path = os.path.join(BASE_DIR, "a.MP4")
     #     with open(file_path, 'rb') as file:
