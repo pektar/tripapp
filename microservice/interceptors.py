@@ -2,7 +2,6 @@
 
 import grpc
 import logging
-from django.contrib.sessions.models import Session
 
 from tripmedia import settings
 
@@ -23,33 +22,15 @@ class AuthenticateInterceptor(grpc.ServerInterceptor):
     """
 
     def __init__(self):
-        self._terminator = _unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, "Access dined!")
+        self._terminator = _unary_unary_rpc_terminator(grpc.StatusCode.INVALID_ARGUMENT, "Wrong header!")
 
     def intercept_service(self, continuation, handler_call_details):
-        session = None
-        session_key = ''
         metadata = dict(handler_call_details.invocation_metadata)
-        method_name = continuation(handler_call_details).unary_unary.__name__
-        # method_name = str.split(handler_call_details.method, '/')[-1:][0]
         auth_meta_keys = settings.auth_meta_keys
 
         # get session key from header if exists
         if auth_meta_keys.get("auth_session_key") in metadata:
-            session_key = metadata[auth_meta_keys.get("auth_session_key")]
-        else:
-            return self._terminator
-
-        # get request session
-        try:
-            session = Session.objects.get(pk=session_key)
-            data = session.get_decoded()
-            if all([
-                data[auth_meta_keys.get("auth_key")] ==
-                auth_meta_keys.get("anonymous_value") or auth_meta_keys.get("auth_value"),
-            ]):
-                return continuation(handler_call_details)
-        except Session.DoesNotExist:
-            logger.debug("session-key is not available")
+            return continuation(handler_call_details)
 
         return self._terminator
 
@@ -65,7 +46,7 @@ class LoggingInterceptor(grpc.ServerInterceptor):
         # logging request
         try:
             logger.debug("%s" % metadata["user-agent"])
-            logger.info("%s SK/%s" % (called_method, metadata["session-key"]))
+            logger.info("%s SK/%s" % (called_method, metadata[settings.auth_meta_keys.get("auth_session_key")]))
         except Exception as key:
             logger.error("request has no %s in its header" % key)
 
