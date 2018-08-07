@@ -1,5 +1,6 @@
 from django.contrib import admin
-from account.models import Status, Profile, UserConnection, User
+
+from account.models import Status, Profile, User, UserConnection
 
 admin.site.register(User)
 admin.site.register(Profile)

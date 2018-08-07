@@ -3,15 +3,12 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser, PermissionsMixin, UserManager
 from django.core.mail import send_mail
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from enum import Enum, unique
 
 from account.validators import UsernameValidator
-from tripmedia.settings import BASE_DIR
-from .strings.account import strings
+from tripmedia.settings import STATIC_ROOT
 
 
 ###############################
@@ -102,18 +99,46 @@ class Profile(models.Model):
                                on_delete=models.SET_DEFAULT)  # TODO check on_delete field
 
     pic_url = models.ImageField(null=True, blank=True,
-                                default=os.path.join(BASE_DIR, 'account\\static\\account\\default-avatar.jpg'))
+                                upload_to='media/',
+                                default=os.path.join(STATIC_ROOT, 'default-avatar.jpg'))
 
     def __str__(self):
-        return self.user.username.strip()
+        return self.user.username
 
-    def get_connection(self, connection_type=None):
-        # return specific connection type from self
-        if connection_type:
-            return UserConnection.objects.filter(creator=self, type=connection_type.name)
-        # return all connections from self
-        else:
-            return UserConnection.objects.all()
+    def following(self, one):
+        # if user following one
+        return UserConnection.objects.filter(user=self, one=one, type=ConnectionType.FOLLOW.name).exists()
+
+    def blocking(self, one):
+        # if user blocking one
+        return UserConnection.objects.filter(user=self, one=one, type=ConnectionType.BLOCK.name).exists()
+
+    def follow(self, one):
+        if self.block(one) or one.block(self):
+            return False
+
+        return True if UserConnection.objects.get_or_create(user=self, one=one,
+                                                            type=ConnectionType.FOLLOW.name) else False
+
+    def block(self, one):
+        # if user follow one or following by one, remove connection
+        return True if UserConnection.objects.save(user=self, one=one, type=ConnectionType.BLOCK.name) else False
+
+    def unblock(self, one):
+        if self.block(one):
+            return True if UserConnection.objects.filter(user=self, one=one,
+                                                         type=ConnectionType.BLOCK.name).delete() else False
+
+    def unfollow(self, one):
+        if self.following(one):
+            return True if UserConnection.objects.filter(user=self, one=one,
+                                                         type=ConnectionType.FOLLOW.name).delete() else False
+
+    def count_followers(self):
+        return UserConnection.objects.filter(one=self, type=ConnectionType.FOLLOW.name).count()
+
+    def count_following(self):
+        return UserConnection.objects.filter(user=self, type=ConnectionType.FOLLOW.name).count()
 
     def change_status(self, new_status):
         status = Status.get_or_create_status(new_status)
@@ -124,8 +149,6 @@ class Profile(models.Model):
 class ConnectionType(Enum):
     BLOCK = "Block"
     FOLLOW = "Follow"
-    REPORT = "Report"
-    SPAM = "Spam"
 
 
 class UserConnection(models.Model):
@@ -133,34 +156,13 @@ class UserConnection(models.Model):
     Relations between users with different type of connections
     """
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    creator = models.ForeignKey(Profile, related_name="creator", on_delete=models.CASCADE)
-    target = models.ForeignKey(Profile, related_name="target", on_delete=models.CASCADE)
-    type = models.CharField(max_length=30,
+    user = models.ForeignKey(Profile, null=False, blank=False, related_name="creator", on_delete=models.CASCADE)
+    one = models.ForeignKey(Profile, null=False, blank=False, related_name="other", on_delete=models.CASCADE)
+    type = models.CharField(max_length=30, null=False, blank=False,
                             choices=[(connection.name, connection.value) for connection in ConnectionType])
 
     class Meta:
-        unique_together = ('creator', 'target', 'type')
+        unique_together = ('user', 'one', 'type')
 
     def __str__(self):
-        return " ".join({self.creator, ConnectionType[self.type], self.target})
-
-
-################################
-# --------- SIGNALS ---------- #
-# Define functions that are sensitive to signals defined in Django
-################################
-
-@receiver(post_save, sender=User)
-def create_or_update_user_profile(sender, instance, created, **kwargs):
-    """
-    Create profile for the registered user
-    or
-    Update user profile when user information changed
-    """
-
-    # Create profile and set ACTIVE status to account -- TODO : ACTIVE STATUS
-    if created:
-        Profile.objects.create(user=instance, status=Status.get_or_create_status(strings.ACTIVE_STATUS))
-
-    else:
-        instance.profile.save()
+        return "%s %s %s" % (self.user, ConnectionType[self.type].value, self.one)
