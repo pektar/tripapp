@@ -7,8 +7,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.timezone import now
 
-from account.models import User
+from account.models import User, UserConnection, ConnectionType
 from account.validators import UsernameValidator
+from microservice.decorators import grpc_require_auth, grpc_check_user_state
 from tripmedia import settings
 from .message import server_api_pb2 as msg
 from .rpc import server_api_pb2_grpc as rpc
@@ -48,10 +49,13 @@ class ServerApi(rpc.ServerApiServicer):
         user = User.objects.create_user(request.username, request.email, raw_password)
         if user:
             session_key = self._create_session(user=user)
+            user_summary = msg.UserSummary(user_id=user.id, username=user.username)
             logger.debug("Successfully user created, User:%s" % user.username)
+            return msg.SignupResp(session_key=session_key, user_summary=user_summary)
 
         return msg.SignupResp(session_key=session_key)
 
+    @grpc_require_auth
     def init_profile(self, request, context):
         user = self._get_user(context)
 
@@ -62,37 +66,36 @@ class ServerApi(rpc.ServerApiServicer):
         # update user profile
         if user:
             profile = user.profile
-            profile.save(full_name=full_name, bio=bio)
+            profile.full_name = full_name
+            profile.bio = bio
+            profile.save()
             return msg.ResultBool(success=True)
         else:
             msg.ResultBool(success=False)
 
+    @grpc_check_user_state
     def login(self, request, context):
         session_key = None
 
-        if self._session_is_active(context):
-            # clean data
-            username = str.lower(request.username)
-            raw_password = request.raw_password
+        #  clean data
+        username = str.lower(request.username)
+        raw_password = request.raw_password
 
-            # create new session for user
-            user = authenticate(username=username, password=raw_password)
-            if user:
-                session_key = self._create_session(user=user)
-            else:
-                context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-                context.set_details("Username or password is incorrect."
-                                    "\n"
-                                    "if you've forgotten your username or password, we can help you get back into your "
-                                    "account")
+        # create new session for user
+        user = authenticate(username=username, password=raw_password)
+        if user:
+            session_key = self._create_session(user=user)
         else:
-            context.set_code(grpc.StatusCode.ALREADY_EXISTS)
-            context.set_details("This account is already logged in from another device.")
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            context.set_details("Username or password is incorrect."
+                                "\n"
+                                "if you've forgotten your username or password, we can help you get back into your "
+                                "account")
 
         return msg.LoginResp(session_key=session_key)
 
+    @grpc_require_auth
     def logout(self, request, context):
-
         # delete active session
         if self._session_is_active(context):
             self._delete_session(context)
@@ -100,9 +103,11 @@ class ServerApi(rpc.ServerApiServicer):
         else:
             return msg.ResultBool(success=False)
 
+    @grpc_require_auth
     def is_logged_in(self, request, context):
         return msg.ResultBool(success=self._session_is_active(context))
 
+    @grpc_require_auth
     def is_username_available(self, request, context):
         username = str.lower(request.username)
 
@@ -117,6 +122,7 @@ class ServerApi(rpc.ServerApiServicer):
 
         return msg.ResultBool(success=False)
 
+    @grpc_require_auth
     def is_email_available(self, request, context):
         email = str.lower(request.email)
 
@@ -130,6 +136,7 @@ class ServerApi(rpc.ServerApiServicer):
 
         return msg.ResultBool(success=False)
 
+    @grpc_require_auth
     def change_username(self, request, context):
         user = self._get_user(context)
 
@@ -138,7 +145,8 @@ class ServerApi(rpc.ServerApiServicer):
 
         try:
             self._validate_username(username=username)
-            user.save(username=username)
+            user.username = username
+            user.save()
             return msg.ResultBool(success=True)
 
         except ValidationError as e:
@@ -147,6 +155,7 @@ class ServerApi(rpc.ServerApiServicer):
 
         return msg.ResultBool(success=False)
 
+    @grpc_require_auth
     def change_profile(self, request, context):
         user = self._get_user(context)
 
@@ -157,10 +166,60 @@ class ServerApi(rpc.ServerApiServicer):
         # change user profile
         if user:
             profile = user.profile
-            profile.save(full_name=full_name, bio=bio)
+            profile.full_name = full_name
+            profile.bio = bio
+            profile.save()
             return msg.ResultBool(success=True)
         else:
             return msg.ResultBool(sucess=False)
+
+    @grpc_require_auth
+    def get_user(self, request, context):
+        user = self._get_user(context)
+
+        # clean data
+        target_id = request.user_id
+
+        # check user is self
+        if user.id == target_id:
+            target = user
+            is_self = True
+        else:
+            try:
+                target = User.objects.get(pk=target_id)
+                is_self = False
+            except User.DoesNotExist:
+                context.set_code(grpc.StatusCode.UNAVAILABLE)
+                context.set_details("User profile is not exist.")
+                return msg.GetUserResp()
+
+        # set data to response
+        username = target.username
+        full_name = target.profile.full_name
+        bio = target.profile.bio
+        # get counts
+        counts = msg.Count(followers=target.profile.count_followers(), following=target.profile.count_following(),
+                           posts=10)
+        return msg.GetUserResp(is_self=is_self, user_id=target.id, username=username, full_name=full_name,
+                               bio=bio, counts=counts)
+
+    @grpc_require_auth
+    def get_follower(self, request, context):
+        user = self._get_user(context)
+        target_id = request.user_id
+        for relation in UserConnection.objects.filter(one__user_id=target_id,
+                                                      type=ConnectionType.FOLLOW.name).iterator(20):
+            yield msg.GetFollowerResp(
+                follower=msg.UserSummary(user_id=relation.user.user.id, username=relation.user.user.username))
+
+    @grpc_require_auth
+    def get_following(self, request, context):
+        user = self._get_user(context)
+        user_id = user.id
+        for relation in UserConnection.objects.filter(user_id=user_id,
+                                                      type=ConnectionType.FOLLOW.name).iterator(20):
+            yield msg.GetFollowerResp(
+                follower=msg.UserSummary(user_id=relation.user.user.id, username=relation.user.user.username))
 
     # def get_file(self, request, context):
     #     file_path = os.path.join(BASE_DIR, "a.MP4")
@@ -171,7 +230,7 @@ class ServerApi(rpc.ServerApiServicer):
     @classmethod
     def _get_user(cls, context):
         auth_meta_keys = settings.auth_meta_keys
-        metadata = dict(context.invocation_metadata)
+        metadata = dict(context.invocation_metadata())
         session_key = metadata[auth_meta_keys["auth_session_key"]]
 
         session = Session.objects.get(pk=session_key)
@@ -195,13 +254,13 @@ class ServerApi(rpc.ServerApiServicer):
 
     @classmethod
     def _delete_session(cls, context):
-        metadata = dict(context.invocation_metadata)
+        metadata = dict(context.invocation_metadata())
         session_key = metadata[settings.auth_meta_keys.get("auth_session_key")]
         Session.objects.get(pk=session_key).delete()
 
     @classmethod
     def _session_is_active(cls, context):
-        metadata = dict(context.invocation_metadata)
+        metadata = dict(context.invocation_metadata())
         auth_meta_keys = settings.auth_meta_keys
 
         session_key = metadata[auth_meta_keys.get("auth_session_key")]
